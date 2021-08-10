@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import SignupScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
