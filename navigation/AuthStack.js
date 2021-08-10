@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import SignupScreen from '../screens/SignupScreen';
 import LoginScreen from '../screens/LoginScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
@@ -16,7 +17,7 @@ const AuthStack = () => {
   let routeName;
 
   useEffect(() => {
-    AsyncStorage.getItem('launched').then((value) => {
+    AsyncStorage.getItem('launched').then(value => {
       if (value == null) {
         AsyncStorage.setItem('launched', 'true'); // No need to wait for `setItem` to finish, although you might want to handle errors
         setIsFirstLaunch(true);
@@ -24,6 +25,11 @@ const AuthStack = () => {
         setIsFirstLaunch(false);
       }
     }); // Add some error handling, also you can simply do setIsFirstLaunch(null)
+
+    GoogleSignin.configure({
+      webClientId:
+        '478984959852-f61ju3i9u7g1bg4pjd8rmu6dqduqr5r6.apps.googleusercontent.com',
+    });
   }, []);
 
   if (isFirstLaunch === null) {
@@ -58,7 +64,7 @@ const AuthStack = () => {
           },
           headerLeft: () => (
             <View style={{marginLeft: 10}}>
-              <FontAwesome.Button 
+              <FontAwesome.Button
                 name="long-arrow-left"
                 size={25}
                 backgroundColor="#f9fafd"
