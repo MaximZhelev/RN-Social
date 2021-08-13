@@ -16,7 +16,7 @@ target 'social' do
 
   pod 'RNCMaskedView', :path => '../node_modules/@react-native-masked-view/masked-view'
 
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+  # pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
   target 'socialTests' do
     inherit! :complete
