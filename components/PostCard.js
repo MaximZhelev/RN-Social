@@ -23,7 +23,7 @@ import {AuthContext} from '../navigation/AuthProvider';
 
 import moment from 'moment';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-
+import firestore from '@react-native-firebase/firestore';
 
 const PostCard = ({item, onDelete, onPress}) => {
   const {user, logout} = useContext(AuthContext);
@@ -48,9 +48,22 @@ const PostCard = ({item, onDelete, onPress}) => {
     commentText = 'Comment';
   }
 
+  const getUser = async () => {
+    await firestore()
+      .collection('users')
+      .doc(item.userId)
+      .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          console.log('User Data', documentSnapshot.data());
+          setUserData(documentSnapshot.data());
+        }
+      });
+  };
 
-
- 
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <Card key={item.id}>

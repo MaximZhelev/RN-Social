@@ -10,9 +10,9 @@ const Routes = () => {
   const {user, setUser} = useContext(AuthContext);
   const [initializing, setInitializing] = useState(true);
 
-  const onAuthStateChanged = user => {
+  const onAuthStateChanged = (user) => {
     setUser(user);
-    if(initializing) setInitializing(false)
+    if (initializing) setInitializing(false);
   };
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Routes = () => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  if(initializing) return null;
+  if (initializing) return null;
 
   return (
     <NavigationContainer>
