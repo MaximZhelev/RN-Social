@@ -20,7 +20,8 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import {AuthContext} from '../navigation/AuthProvider';
-
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const EditProfileScreen = () => {
   const {user, logout} = useContext(AuthContext);
@@ -28,6 +29,102 @@ const EditProfileScreen = () => {
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
+
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+
+  const handleUpdate = async() => {
+    let imgUrl = await uploadImage();
+
+    if( imgUrl == null && userData.userImg ) {
+      imgUrl = userData.userImg;
+    }
+
+    firestore()
+    .collection('users')
+    .doc(user.uid)
+    .update({
+      fname: userData.fname,
+      lname: userData.lname,
+      about: userData.about,
+      phone: userData.phone,
+      country: userData.country,
+      city: userData.city,
+      userImg: imgUrl,
+    })
+    .then(() => {
+      console.log('User Updated!');
+      Alert.alert(
+        'Profile Updated!',
+        'Your profile has been updated successfully.'
+      );
+    })
+  }
+
+  const uploadImage = async () => {
+    if( image == null ) {
+      return null;
+    }
+    const uploadUri = image;
+    let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+    // Add timestamp to File Name
+    const extension = filename.split('.').pop(); 
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+
+    setUploading(true);
+    setTransferred(0);
+
+    const storageRef = storage().ref(`photos/${filename}`);
+    const task = storageRef.putFile(uploadUri);
+
+    // Set transferred state
+    task.on('state_changed', (taskSnapshot) => {
+      console.log(
+        `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+      );
+
+      setTransferred(
+        Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
+          100,
+      );
+    });
+
+    try {
+      await task;
+
+      const url = await storageRef.getDownloadURL();
+
+      setUploading(false);
+      setImage(null);
+
+      // Alert.alert(
+      //   'Image uploaded!',
+      //   'Your image has been uploaded to the Firebase Cloud Storage Successfully!',
+      // );
+      return url;
+
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
@@ -124,8 +221,8 @@ const EditProfileScreen = () => {
                     ? image
                     : userData
                     ? userData.userImg ||
-                      'https://lh3.googleusercontent.com/ogw/ADea4I64W_YTrHVGatiMa6C1php_p9WmNCtUD-Y_wVJM=s83-c-mo'
-                    : 'https://lh3.googleusercontent.com/ogw/ADea4I64W_YTrHVGatiMa6C1php_p9WmNCtUD-Y_wVJM=s83-c-mo',
+                      'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                    : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
                 }}
                 style={{height: 100, width: 100}}
                 imageStyle={{borderRadius: 15}}>
