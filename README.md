@@ -1,7 +1,5 @@
 # RN Social
 
-🚧 This app is under development 🚧 
-
 ## Packages Used
 - [React Native Onboarding Swiper](https://github.com/jfilter/react-native-onboarding-swiper)
 - [React Navigation v5](https://reactnavigation.org/)
